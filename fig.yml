@@ -1,0 +1,7 @@
+web:
+  image: benjy/php7
+  ports:
+    - "80:80"
+    - "8080:8080"
+  volumes:
+    - ./app:/var/www/html/app

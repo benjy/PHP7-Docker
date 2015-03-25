@@ -1,0 +1,13 @@
+Listen 8080
+
+<VirtualHost *:8080>
+  DocumentRoot /var/www/html/app
+  ServerName php7.dev
+  <FilesMatch \.php$>
+    SetHandler application/x-httpd-php
+  </FilesMatch>
+  <Directory /var/www/html/app>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+  </Directory>
+</VirtualHost>
