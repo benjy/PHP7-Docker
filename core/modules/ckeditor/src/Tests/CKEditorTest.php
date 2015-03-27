@@ -44,7 +44,6 @@ class CKEditorTest extends KernelTestBase {
 
     // Install the Filter module.
     $this->installSchema('system', 'url_alias');
-    $this->installSchema('system', 'router');
 
     // Create text format, associate CKEditor.
     $filtered_html_format = entity_create('filter_format', array(
@@ -406,7 +405,7 @@ class CKEditorTest extends KernelTestBase {
   protected function assertCKEditorLanguage($langcode = 'fr') {
     // Set French as the site default language.
     ConfigurableLanguage::createFromLangcode('fr')->save();
-    $this->config('system.site')->set('langcode', 'fr')->save();
+    $this->config('system.site')->set('default_langcode', 'fr')->save();
 
     // Reset the language manager so new negotiations attempts will fall back on
     // French. Reinject the language manager CKEditor to use the current one.

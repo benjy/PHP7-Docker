@@ -538,13 +538,13 @@ class RendererTest extends RendererTestBase {
     // Create an empty element.
     $test_element = [
       '#cache' => [
-        'cid' => 'render_cache_test',
+        'keys' => ['render_cache_test'],
         'tags' => ['render_cache_tag'],
       ],
       '#markup' => '',
       'child' => [
         '#cache' => [
-          'cid' => 'render_cache_test_child',
+          'keys' => ['render_cache_test_child'],
           'tags' => ['render_cache_tag_child:1', 'render_cache_tag_child:2'],
         ],
         '#markup' => '',
@@ -575,6 +575,46 @@ class RendererTest extends RendererTestBase {
     // The cache item also has a 'rendered' cache tag.
     $cache_item = $this->cacheFactory->get('render')->get('render_cache_test');
     $this->assertSame(Cache::mergeTags($expected_tags, ['rendered']), $cache_item->tags);
+  }
+
+  /**
+   * @covers ::render
+   * @covers ::doRender
+   * @covers ::cacheGet
+   * @covers ::cacheSet
+   * @covers ::createCacheID
+   *
+   * @dataProvider providerTestRenderCacheMaxAge
+   */
+  public function testRenderCacheMaxAge($max_age, $is_render_cached, $render_cache_item_expire) {
+    $this->setUpRequest();
+    $this->setupMemoryCache();
+
+    $element = [
+      '#cache' => [
+        'keys' => ['render_cache_test'],
+        'max-age' => $max_age,
+      ],
+      '#markup' => '',
+    ];
+    $this->renderer->render($element);
+
+    $cache_item = $this->cacheFactory->get('render')->get('render_cache_test');
+    if (!$is_render_cached) {
+      $this->assertFalse($cache_item);
+    }
+    else {
+      $this->assertNotFalse($cache_item);
+      $this->assertSame($render_cache_item_expire, $cache_item->expire);
+    }
+  }
+
+  public function providerTestRenderCacheMaxAge() {
+    return [
+      [0, FALSE, NULL],
+      [60, TRUE, REQUEST_TIME + 60],
+      [Cache::PERMANENT, TRUE, -1],
+    ];
   }
 
 }
