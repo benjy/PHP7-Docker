@@ -2,12 +2,12 @@
 
 To build the image:
 
-    `docker build -t benjy/php7 .`
+    docker build -t benjy/php7 .
     
 To run the image with fig:
 
-    `fig up -d`
+    fig up -d
     
 To run the image with docker (untested):
 
-    `docker run benjy/php7 -p 8080 -v ./drupal8:/var/www/html/app`
+    docker run benjy/php7 -p 8080 -v ./drupal8:/var/www/html/app
