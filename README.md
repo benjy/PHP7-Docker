@@ -1,3 +1,7 @@
+# Required Core Issues
+
+ - https://www.drupal.org/node/2462151
+
 # PHP7-Docker
 
 To build the image:
