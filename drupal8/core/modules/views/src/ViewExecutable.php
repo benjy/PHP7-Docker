@@ -7,8 +7,9 @@
 
 namespace Drupal\views;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\Cache;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Routing\RouteProviderInterface;
@@ -993,7 +994,7 @@ class ViewExecutable implements \Serializable {
 
         // Add this argument's substitution
         $substitutions['%' . ($position + 1)] = $arg_title;
-        $substitutions['!' . ($position + 1)] = strip_tags(String::decodeEntities($arg));
+        $substitutions['!' . ($position + 1)] = strip_tags(Html::decodeEntities($arg));
 
         // Test to see if we should use this argument's title
         if (!empty($argument->options['title_enable']) && !empty($argument->options['title'])) {
@@ -1859,7 +1860,7 @@ class ViewExecutable implements \Serializable {
   public function getUrlInfo($display_id = '') {
     $this->initDisplay();
     if (!$this->display_handler instanceof DisplayRouterInterface) {
-      throw new \InvalidArgumentException(String::format('You cannot generate a URL for the display @display_id', ['@display_id' => $display_id]));
+      throw new \InvalidArgumentException(SafeMarkup::format('You cannot generate a URL for the display @display_id', ['@display_id' => $display_id]));
     }
     return $this->display_handler->getUrlInfo();
   }

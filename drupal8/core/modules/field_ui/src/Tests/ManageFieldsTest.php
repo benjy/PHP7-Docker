@@ -7,9 +7,10 @@
 
 namespace Drupal\field_ui\Tests;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\entity_reference\Tests\EntityReferenceTestTrait;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\simpletest\WebTestBase;
@@ -22,6 +23,7 @@ use Drupal\simpletest\WebTestBase;
 class ManageFieldsTest extends WebTestBase {
 
   use FieldUiTestTrait;
+  use EntityReferenceTestTrait;
 
   /**
    * Modules to install.
@@ -91,18 +93,12 @@ class ManageFieldsTest extends WebTestBase {
     ));
     $vocabulary->save();
 
-    entity_create('field_storage_config', array(
-      'field_name' => 'field_' . $vocabulary->id(),
-      'entity_type' => 'node',
-      'type' => 'taxonomy_term_reference',
-    ))->save();
-
-    entity_create('field_config', array(
-      'field_name' => 'field_' . $vocabulary->id(),
-      'entity_type' => 'node',
-      'label' => 'Tags',
-      'bundle' => 'article',
-    ))->save();
+    $handler_settings = array(
+      'target_bundles' => array(
+        $vocabulary->id() => $vocabulary->id(),
+      ),
+    );
+    $this->createEntityReferenceField('node', 'article', 'field_' . $vocabulary->id(), 'Tags', 'taxonomy_term', 'default', $handler_settings);
 
     entity_get_form_display('node', 'article', 'default')
       ->setComponent('field_' . $vocabulary->id())
@@ -576,10 +572,10 @@ class ManageFieldsTest extends WebTestBase {
     $field_types = \Drupal::service('plugin.manager.field.field_type')->getDefinitions();
     foreach ($field_types as $field_type => $definition) {
       if (empty($definition['no_ui'])) {
-        $this->assertTrue($this->xpath('//select[@id="edit-new-storage-type"]//option[@value=:field_type]', array(':field_type' => $field_type)), String::format('Configurable field type @field_type is available.', array('@field_type' => $field_type)));
+        $this->assertTrue($this->xpath('//select[@id="edit-new-storage-type"]//option[@value=:field_type]', array(':field_type' => $field_type)), SafeMarkup::format('Configurable field type @field_type is available.', array('@field_type' => $field_type)));
       }
       else {
-        $this->assertFalse($this->xpath('//select[@id="edit-new-storage-type"]//option[@value=:field_type]', array(':field_type' => $field_type)), String::format('Non-configurable field type @field_type is not available.', array('@field_type' => $field_type)));
+        $this->assertFalse($this->xpath('//select[@id="edit-new-storage-type"]//option[@value=:field_type]', array(':field_type' => $field_type)), SafeMarkup::format('Non-configurable field type @field_type is not available.', array('@field_type' => $field_type)));
       }
     }
   }
@@ -606,7 +602,7 @@ class ManageFieldsTest extends WebTestBase {
     $edit = array(
       'field_name' => 'tags',
       'label' => $this->randomMachineName(),
-      'new_storage_type' => 'taxonomy_term_reference',
+      'new_storage_type' => 'entity_reference',
     );
     $url = 'admin/structure/types/manage/' . $this->contentType . '/fields/add-field';
     $this->drupalPostForm($url, $edit, t('Save and continue'));
