@@ -8,13 +8,13 @@ RUN sudo apt-get install apache2 mysql-client mysql-server curl libapache2-mod-a
 COPY php-src /src
 # autoconf, bison and libxml are for building PHP. apache2-dev is so we can build
 # the shared PHP library for apache.
-RUN sudo apt-get install autoconf bison libxml2-dev apache2-dev -y
+RUN sudo apt-get install autoconf bison libxml2-dev apache2-dev libfreetype6-dev libmcrypt-dev -y
 
 # build the ./configure script
 RUN cd /src && ./buildconf
 
 # Configure with an apache shared .so file.
-RUN cd /src && ./configure --with-apxs2=/usr/bin/apxs --enable-maintainer-zts --with-pdo-mysql
+RUN cd /src && ./configure --with-apxs2=/usr/bin/apxs --enable-maintainer-zts --with-pdo-mysql --with-gd --enable-mbstring --enable-exif --with-mcrypt
 
 #compile (4 is the number of cores you have)
 RUN cd /src && make -j4 && make install
