@@ -1536,7 +1536,7 @@ ZEND_FUNCTION(class_alias)
 			if (zend_register_class_alias_ex(alias_name, alias_name_len, ce) == SUCCESS) {
 				RETURN_TRUE;
 			} else {
-				zend_error(E_WARNING, "Cannot redeclare %s %s", zend_get_object_type(ce), alias_name);
+				zend_error(E_WARNING, "Cannot declare %s %s, because the name is already in use", zend_get_object_type(ce), alias_name);
 				RETURN_FALSE;
 			}
 		} else {
@@ -1555,7 +1555,7 @@ ZEND_FUNCTION(class_alias)
    Cause an intentional memory leak, for testing/debugging purposes */
 ZEND_FUNCTION(leak)
 {
-	zend_long leakbytes=3;
+	zend_long leakbytes = 3;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "|l", &leakbytes) == FAILURE) {
 		return;
@@ -1565,7 +1565,8 @@ ZEND_FUNCTION(leak)
 }
 /* }}} */
 
-/* {{{ proto leak_variable(mixed variable [, bool leak_data]) */
+/* {{{ proto void leak_variable(mixed variable [, bool leak_data])
+   Leak a variable that is a resource or an object */
 ZEND_FUNCTION(leak_variable)
 {
 	zval *zv;
@@ -1589,12 +1590,19 @@ ZEND_FUNCTION(leak_variable)
 
 
 #ifdef ZEND_TEST_EXCEPTIONS
+/* {{{ proto void crash(void)
+   Crash the script */
 ZEND_FUNCTION(crash)
 {
-	char *nowhere=NULL;
+	char *nowhere = NULL;
+
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
 
 	memcpy(nowhere, "something", sizeof("something"));
 }
+/* }}} */
 #endif
 
 #endif /* ZEND_DEBUG */
@@ -1690,6 +1698,10 @@ ZEND_FUNCTION(set_error_handler)
    Restores the previously defined error handler function */
 ZEND_FUNCTION(restore_error_handler)
 {
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
 	if (Z_TYPE(EG(user_error_handler)) != IS_UNDEF) {
 		zval zeh;
 
@@ -1752,6 +1764,10 @@ ZEND_FUNCTION(set_exception_handler)
    Restores the previously defined exception handler function */
 ZEND_FUNCTION(restore_exception_handler)
 {
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
 	if (Z_TYPE(EG(user_exception_handler)) != IS_UNDEF) {
 		zval_ptr_dtor(&EG(user_exception_handler));
 	}
