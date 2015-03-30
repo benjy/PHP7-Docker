@@ -8,7 +8,7 @@
 namespace Drupal\filter\Tests;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\filter\FilterPluginCollection;
 use Drupal\simpletest\KernelTestBase;
 
@@ -399,7 +399,7 @@ class FilterUnitTest extends KernelTestBase {
   /**
    * Tests the HTML escaping filter.
    *
-   * \Drupal\Component\Utility\String::checkPlain() is not tested here.
+   * \Drupal\Component\Utility\SafeMarkup::checkPlain() is not tested here.
    */
   function testHtmlEscapeFilter() {
     // Get FilterHtmlEscape object.
@@ -767,10 +767,10 @@ www.example.com with a newline in comments -->
           )));
         }
         if (!$success) {
-          $this->verbose('Source:<pre>' . String::checkPlain(var_export($source, TRUE)) . '</pre>'
-            . '<hr />' . 'Result:<pre>' . String::checkPlain(var_export($result, TRUE)) . '</pre>'
+          $this->verbose('Source:<pre>' . SafeMarkup::checkPlain(var_export($source, TRUE)) . '</pre>'
+            . '<hr />' . 'Result:<pre>' . SafeMarkup::checkPlain(var_export($result, TRUE)) . '</pre>'
             . '<hr />' . ($is_expected ? 'Expected:' : 'Not expected:')
-            . '<pre>' . String::checkPlain(var_export($value, TRUE)) . '</pre>'
+            . '<pre>' . SafeMarkup::checkPlain(var_export($value, TRUE)) . '</pre>'
           );
         }
       }
@@ -1022,7 +1022,7 @@ body {color:red}
    *   TRUE on pass, FALSE on fail.
    */
   function assertNormalized($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertTrue(strpos(strtolower(String::decodeEntities($haystack)), $needle) !== FALSE, $message, $group);
+    return $this->assertTrue(strpos(strtolower(Html::decodeEntities($haystack)), $needle) !== FALSE, $message, $group);
   }
 
   /**
@@ -1046,6 +1046,6 @@ body {color:red}
    *   TRUE on pass, FALSE on fail.
    */
   function assertNoNormalized($haystack, $needle, $message = '', $group = 'Other') {
-    return $this->assertTrue(strpos(strtolower(String::decodeEntities($haystack)), $needle) === FALSE, $message, $group);
+    return $this->assertTrue(strpos(strtolower(Html::decodeEntities($haystack)), $needle) === FALSE, $message, $group);
   }
 }

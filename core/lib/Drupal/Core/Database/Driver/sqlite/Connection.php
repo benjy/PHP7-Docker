@@ -12,7 +12,6 @@ use Drupal\Core\Database\DatabaseNotFoundException;
 use Drupal\Core\Database\TransactionNoActiveException;
 use Drupal\Core\Database\TransactionNameNonUniqueException;
 use Drupal\Core\Database\TransactionCommitFailedException;
-use Drupal\Core\Database\Driver\sqlite\Statement;
 use Drupal\Core\Database\Connection as DatabaseConnection;
 
 /**
@@ -124,6 +123,9 @@ class Connection extends DatabaseConnection {
     $pdo->sqliteCreateFunction('substring_index', array(__CLASS__, 'sqlFunctionSubstringIndex'), 3);
     $pdo->sqliteCreateFunction('rand', array(__CLASS__, 'sqlFunctionRand'));
     $pdo->sqliteCreateFunction('regexp', array(__CLASS__, 'sqlFunctionRegexp'));
+
+    // Create a user-space case-insensitive collation with UTF-8 support.
+    $pdo->sqliteCreateCollation('NOCASE_UTF8', array('Drupal\Component\Utility\Unicode', 'strCaseCmp'));
 
     // Execute sqlite init_commands.
     if (isset($connection_options['init_commands'])) {
@@ -332,6 +334,23 @@ class Connection extends DatabaseConnection {
       }
     }
     return $modified;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function handleQueryException(\PDOException $e, $query, array $args = array(), $options = array()) {
+    // The database schema might be changed by another process in between the
+    // time that the statement was prepared and the time the statement was run
+    // (e.g. usually happens when running tests). In this case, we need to
+    // re-run the query.
+    // @see http://www.sqlite.org/faq.html#q15
+    // @see http://www.sqlite.org/rescode.html#schema
+    if (!empty($e->errorInfo[1]) && $e->errorInfo[1] === 17) {
+      return $this->query($query, $args, $options);
+    }
+
+    parent::handleQueryException($e, $query, $args, $options);
   }
 
   public function queryRange($query, $from, $count, array $args = array(), array $options = array()) {

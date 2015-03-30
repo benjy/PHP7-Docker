@@ -5,7 +5,7 @@
  * Administration functions for language.module.
  */
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
@@ -170,7 +170,7 @@ function template_preprocess_language_content_settings_table(&$variables) {
           'data' => array(
             '#prefix' => '<label>',
             '#suffix' => '</label>',
-            '#markup' => String::checkPlain($element[$bundle]['settings']['#label']),
+            '#markup' => SafeMarkup::checkPlain($element[$bundle]['settings']['#label']),
           ),
           'class' => array('bundle'),
         ),
@@ -199,7 +199,7 @@ function template_preprocess_language_content_settings_table(&$variables) {
  *   - build: A render element representing a table of bundle content language
  *     settings for a particular entity type.
  *
- * @ingroup themable
+ * @ingroup themeable
  */
 function theme_language_content_settings_table($variables) {
   return '<h4>' . $variables['build']['#title'] . '</h4>' . drupal_render($variables['build']);
