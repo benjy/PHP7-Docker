@@ -31,6 +31,10 @@ RUN a2ensite php7
 # we can write to the disk without permission issues.
 RUN usermod -u 1000 www-data
 
+# Install Drush.
+RUN curl -sS https://getcomposer.org/installer | /usr/local/bin/php && mv composer.phar /usr/local/bin/composer
+RUN composer global require drush/drush:dev-master
+
 RUN /usr/sbin/mysqld &
 
 COPY run.sh /root/run.sh
