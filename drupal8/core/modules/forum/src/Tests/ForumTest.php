@@ -511,7 +511,7 @@ class ForumTest extends WebTestBase {
    *
    * @param array $forum
    *   A forum array.
-   * @param boolean $container
+   * @param bool $container
    *   TRUE if $forum is a container; FALSE otherwise.
    *
    * @return object
@@ -563,7 +563,7 @@ class ForumTest extends WebTestBase {
    * @param $admin
    *   Boolean to indicate whether the user can 'access administration pages'.
    * @param $response
-   *   The exptected HTTP response code.
+   *   The expected HTTP response code.
    */
   private function verifyForums(EntityInterface $node, $admin, $response = 200) {
     $response2 = ($admin) ? 200 : 403;

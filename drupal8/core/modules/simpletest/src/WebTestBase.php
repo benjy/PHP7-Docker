@@ -303,8 +303,8 @@ abstract class WebTestBase extends TestBase {
    *
    * Entities postpone the composition of their renderable arrays to #pre_render
    * functions in order to maximize cache efficacy. This means that the full
-   * rendable array for an entity is constructed in drupal_render(). Some tests
-   * require the complete renderable array for an entity outside of the
+   * renderable array for an entity is constructed in drupal_render(). Some
+   * tests require the complete renderable array for an entity outside of the
    * drupal_render process in order to verify the presence of specific values.
    * This method isolates the steps in the render process that produce an
    * entity's renderable array.
@@ -888,7 +888,7 @@ abstract class WebTestBase extends TestBase {
     $this->kernel = DrupalKernel::createFromRequest($request, $class_loader, 'prod', TRUE);
     $this->kernel->prepareLegacyRequest($request);
     // Force the container to be built from scratch instead of loaded from the
-    // disk. This forces us to not accidently load the parent site.
+    // disk. This forces us to not accidentally load the parent site.
     $container = $this->kernel->rebuildContainer();
 
     $config = $container->get('config.factory');
@@ -2741,6 +2741,17 @@ abstract class WebTestBase extends TestBase {
   }
 
   /**
+   * Asserts whether an expected cache context was present in the last response.
+   *
+   * @param string $expected_cache_context
+   *   The expected cache context.
+   */
+  protected function assertCacheContext($expected_cache_context) {
+    $cache_contexts = explode(' ', $this->drupalGetHeader('X-Drupal-Cache-Contexts'));
+    $this->assertTrue(in_array($expected_cache_context, $cache_contexts), "'" . $expected_cache_context . "' is present in the X-Drupal-Cache-Contexts header.");
+  }
+
+  /**
    * Asserts whether an expected cache tag was present in the last response.
    *
    * @param string $expected_cache_tag
@@ -2748,7 +2759,18 @@ abstract class WebTestBase extends TestBase {
    */
   protected function assertCacheTag($expected_cache_tag) {
     $cache_tags = explode(' ', $this->drupalGetHeader('X-Drupal-Cache-Tags'));
-    $this->assertTrue(in_array($expected_cache_tag, $cache_tags));
+    $this->assertTrue(in_array($expected_cache_tag, $cache_tags), "'" . $expected_cache_tag . "' is present in the X-Drupal-Cache-Tags header.");
+  }
+
+  /**
+   * Asserts whether an expected cache tag was absent in the last response.
+   *
+   * @param string $cache_tag
+   *   The cache tag to check.
+   */
+  protected function assertNoCacheTag($cache_tag) {
+    $cache_tags = explode(' ', $this->drupalGetHeader('X-Drupal-Cache-Tags'));
+    $this->assertFalse(in_array($cache_tag, $cache_tags), "'" . $cache_tag . "' is absent in the X-Drupal-Cache-Tags header.");
   }
 
 }
