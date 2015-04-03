@@ -34,7 +34,7 @@ class GlossaryTest extends ViewTestBase {
    * Tests the default glossary view.
    */
   public function testGlossaryView() {
-    // create a contentype and add some nodes, with a non random title.
+    // Create a content type and add some nodes, with a non-random title.
     $type = $this->drupalCreateContentType();
     $nodes_per_char = array(
       'd' => 1,
@@ -88,7 +88,7 @@ class GlossaryTest extends ViewTestBase {
 
     // Verify cache tags.
     $this->enablePageCaching();
-    $this->assertPageCacheContextsAndTags(Url::fromRoute('view.glossary.page_1'), ['languages', 'theme', 'url', 'user.node_grants:view'], [
+    $this->assertPageCacheContextsAndTags(Url::fromRoute('view.glossary.page_1'), ['languages:' . LanguageInterface::TYPE_CONTENT, 'languages:' . LanguageInterface::TYPE_INTERFACE, 'theme', 'url', 'user.node_grants:view', 'user.permissions'], [
       'config:views.view.glossary',
       'node:' . $nodes_by_char['a'][0]->id(), 'node:' . $nodes_by_char['a'][1]->id(), 'node:' . $nodes_by_char['a'][2]->id(),
       'node_list',

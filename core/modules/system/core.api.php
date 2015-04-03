@@ -236,21 +236,27 @@
  *   to uninstall/reinstall or use a hook_update_N() function.
  * - Exporting and importing configuration.
  *
- * The file storage format for configuration information in Drupal is @link
- * http://en.wikipedia.org/wiki/YAML YAML files. @endlink Configuration is
+ * The file storage format for configuration information in Drupal is
+ * @link http://en.wikipedia.org/wiki/YAML YAML files. @endlink Configuration is
  * divided into files, each containing one configuration object. The file name
  * for a configuration object is equal to the unique name of the configuration,
  * with a '.yml' extension. The default configuration files for each module are
  * placed in the config/install directory under the top-level module directory,
  * so look there in most Core modules for examples.
  *
+ * @section sec_schema Configuration schema and translation
  * Each configuration file has a specific structure, which is expressed as a
  * YAML-based configuration schema. The configuration schema details the
  * structure of the configuration, its data types, and which of its values need
  * to be translatable. Each module needs to define its configuration schema in
  * files in the config/schema directory under the top-level module directory, so
- * look there in most Core modules for examples. Note that data types label,
- * text, and data_format are translatable; string is non-translatable text.
+ * look there in most Core modules for examples.
+ *
+ * Configuration can be internationalized; see the
+ * @link i18n Internationalization topic @endlink for more information. Data
+ * types label, text, and date_format in configuration schema are translatable;
+ * string is non-translatable text (the 'translatable' property on a schema
+ * data type definition indicates that it is translatable).
  *
  * @section sec_simple Simple configuration
  * The simple configuration API should be used for information that will always
@@ -295,7 +301,7 @@
  * section, if your module allows users to create zero or more items (where
  * "items" are things like content type definitions, view definitions, and the
  * like), then you need to define a configuration entity type to store your
- * configuration. Creating an entity type, loading entites, and querying them
+ * configuration. Creating an entity type, loading entities, and querying them
  * are outlined in the @link entity_api Entity API topic. @endlink Here are a
  * few additional steps and notes specific to configuration entities:
  * - For examples, look for classes that implement
@@ -948,7 +954,7 @@
  * @section running Running tests
  * You can run both Simpletest and PHPUnit tests by enabling the core Testing
  * module (core/modules/simpletest). Once that module is enabled, tests can be
- * run usin the core/scripts/run-tests.sh script, using
+ * run using the core/scripts/run-tests.sh script, using
  * @link https://drupal.org/project/drush Drush @endlink, or from the Testing
  * module user interface.
  *
@@ -1128,7 +1134,7 @@
  *   subdirectory. Most Drupal Core plugins use this method of discovery.
  * - Hook: Plugin modules need to implement a hook to tell the manager about
  *   their plugins.
- * - YAML: Plugins are listd in YAML files. Drupal Core uses this method for
+ * - YAML: Plugins are listed in YAML files. Drupal Core uses this method for
  *   discovering local tasks and local actions. This is mainly useful if all
  *   plugins use the same class, so it is kind of like a global derivative.
  * - Static: Plugin classes are registered within the plugin manager class
@@ -1340,7 +1346,7 @@
  * - Copy the function to your module's .module file.
  * - Change the name of the function, substituting your module's short name
  *   (name of the module's directory, and .info.yml file without the extension)
- *   for the "hook" part of the sample function name. For instance, to implemnt
+ *   for the "hook" part of the sample function name. For instance, to implement
  *   hook_batch_alter(), you would rename it to my_module_batch_alter().
  * - Edit the documentation for the function (normally, your implementation
  *   should just have one line saying "Implements hook_batch_alter().").
@@ -1483,8 +1489,8 @@
  *
  * Alternatively, forms can be built directly via the routing system which will
  * take care of calling \Drupal::formBuilder()->getForm(). The following example
- * demonstrates the use of a routing.yml file to display a form at the the
- * given route.
+ * demonstrates the use of a routing.yml file to display a form at the given
+ * route.
  *
  * @code
  * example.form:

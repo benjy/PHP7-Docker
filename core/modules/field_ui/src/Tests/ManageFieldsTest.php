@@ -194,14 +194,14 @@ class ManageFieldsTest extends WebTestBase {
     // Populate the field settings with new settings.
     $string = 'updated dummy test string';
     $edit = array(
-      'field_storage[settings][test_field_storage_setting]' => $string,
+      'settings[test_field_storage_setting]' => $string,
     );
     $this->drupalPostForm(NULL, $edit, t('Save field settings'));
 
     // Go to the field edit page.
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/' . $field_id);
     $edit = array(
-      'field[settings][test_field_setting]' => $string,
+      'settings[test_field_setting]' => $string,
     );
     $this->assertText(t('Default value'), 'Default value heading is shown');
     $this->drupalPostForm(NULL, $edit, t('Save settings'));
@@ -243,22 +243,22 @@ class ManageFieldsTest extends WebTestBase {
     // Assert the cardinality other field cannot be empty when cardinality is
     // set to 'number'.
     $edit = array(
-      'field_storage[cardinality]' => 'number',
-      'field_storage[cardinality_number]' => '',
+      'cardinality' => 'number',
+      'cardinality_number' => '',
     );
     $this->drupalPostForm($field_edit_path, $edit, t('Save field settings'));
     $this->assertText('Number of values is required.');
 
     // Submit a custom number.
     $edit = array(
-      'field_storage[cardinality]' => 'number',
-      'field_storage[cardinality_number]' => 6,
+      'cardinality' => 'number',
+      'cardinality_number' => 6,
     );
     $this->drupalPostForm($field_edit_path, $edit, t('Save field settings'));
     $this->assertText('Updated field Body field settings.');
     $this->drupalGet($field_edit_path);
-    $this->assertFieldByXPath("//select[@name='field_storage[cardinality]']", 'number');
-    $this->assertFieldByXPath("//input[@name='field_storage[cardinality_number]']", 6);
+    $this->assertFieldByXPath("//select[@name='cardinality']", 'number');
+    $this->assertFieldByXPath("//input[@name='cardinality_number']", 6);
 
     // Check that tabs displayed.
     $this->assertLink(t('Edit'));
@@ -268,13 +268,13 @@ class ManageFieldsTest extends WebTestBase {
 
     // Set to unlimited.
     $edit = array(
-      'field_storage[cardinality]' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+      'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
     );
     $this->drupalPostForm($field_edit_path, $edit, t('Save field settings'));
     $this->assertText('Updated field Body field settings.');
     $this->drupalGet($field_edit_path);
-    $this->assertFieldByXPath("//select[@name='field_storage[cardinality]']", FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED);
-    $this->assertFieldByXPath("//input[@name='field_storage[cardinality_number]']", 1);
+    $this->assertFieldByXPath("//select[@name='cardinality']", FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED);
+    $this->assertFieldByXPath("//input[@name='cardinality_number']", 1);
   }
 
   /**
@@ -284,7 +284,7 @@ class ManageFieldsTest extends WebTestBase {
     // Delete the field.
     $field_id = 'node.' . $this->contentType . '.' . $this->fieldName;
     $this->drupalGet('admin/structure/types/manage/' . $this->contentType . '/fields/' . $field_id);
-    $this->drupalPostForm(NULL, array(), t('Delete field'));
+    $this->clickLink(t('Delete'));
     $this->assertResponse(200);
   }
 
@@ -298,7 +298,8 @@ class ManageFieldsTest extends WebTestBase {
     // Delete all instances of the field.
     foreach ($field_storage->getBundles() as $node_type) {
       // Delete all the body field instances.
-      $this->drupalPostForm('admin/structure/types/manage/' . $node_type . '/fields/node.' . $node_type . '.' . $this->fieldName, array(), t('Delete field'));
+      $this->drupalGet('admin/structure/types/manage/' . $node_type . '/fields/node.' . $node_type . '.' . $this->fieldName);
+      $this->clickLink(t('Delete'));
       $this->drupalPostForm(NULL, array(), t('Delete'));
     }
     // Check "Re-use existing field" appears.
@@ -415,7 +416,7 @@ class ManageFieldsTest extends WebTestBase {
 
     $this->drupalGet($admin_path);
     $edit = array(
-      'field[required]' => 1,
+      'required' => 1,
     );
     $this->drupalPostForm(NULL, $edit, t('Save settings'));
 
@@ -497,7 +498,7 @@ class ManageFieldsTest extends WebTestBase {
    */
   function testLockedField() {
     // Create a locked field and attach it to a bundle. We need to do this
-    // programatically as there's no way to create a locked field through UI.
+    // programmatically as there's no way to create a locked field through UI.
     $field_name = strtolower($this->randomMachineName(8));
     $field_storage = entity_create('field_storage_config', array(
       'field_name' => $field_name,
@@ -650,7 +651,7 @@ class ManageFieldsTest extends WebTestBase {
     entity_get_form_display('node', 'article', 'default')->setComponent('field_image')->save();
 
     $edit = array(
-      'field[description]' => '<strong>Test with an upload field.',
+      'description' => '<strong>Test with an upload field.',
     );
     $this->drupalPostForm('admin/structure/types/manage/article/fields/node.article.field_image', $edit, t('Save settings'));
 
@@ -660,7 +661,7 @@ class ManageFieldsTest extends WebTestBase {
     $this->assertText('From hook_field_widget_form_alter(): Default form is true.', 'Default value form in hook_field_widget_form_alter().');
 
     $edit = array(
-      'field[description]' => '<em>Test with a non upload field.',
+      'description' => '<em>Test with a non upload field.',
     );
     $this->drupalPostForm('admin/structure/types/manage/article/fields/node.article.field_tags', $edit, t('Save settings'));
 

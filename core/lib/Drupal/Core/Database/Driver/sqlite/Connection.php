@@ -25,7 +25,7 @@ class Connection extends DatabaseConnection {
    * Version of sqlite lower then 3.6.8 can't use savepoints.
    * See http://www.sqlite.org/releaselog/3_6_8.html
    *
-   * @var boolean
+   * @var bool
    */
   protected $savepointSupport = FALSE;
 
@@ -37,7 +37,7 @@ class Connection extends DatabaseConnection {
   /**
    * Whether or not the active transaction (if any) will be rolled back.
    *
-   * @var boolean
+   * @var bool
    */
   protected $willRollback;
 
@@ -57,7 +57,7 @@ class Connection extends DatabaseConnection {
    * This variable is set to public because Schema needs to
    * access it. However, it should not be manually set.
    *
-   * @var boolean
+   * @var bool
    */
   var $tableDropped = FALSE;
 
@@ -115,6 +115,7 @@ class Connection extends DatabaseConnection {
     $pdo->sqliteCreateFunction('if', array(__CLASS__, 'sqlFunctionIf'));
     $pdo->sqliteCreateFunction('greatest', array(__CLASS__, 'sqlFunctionGreatest'));
     $pdo->sqliteCreateFunction('pow', 'pow', 2);
+    $pdo->sqliteCreateFunction('exp', 'exp', 1);
     $pdo->sqliteCreateFunction('length', 'strlen', 1);
     $pdo->sqliteCreateFunction('md5', 'md5', 1);
     $pdo->sqliteCreateFunction('concat', array(__CLASS__, 'sqlFunctionConcat'));
@@ -125,7 +126,7 @@ class Connection extends DatabaseConnection {
     $pdo->sqliteCreateFunction('regexp', array(__CLASS__, 'sqlFunctionRegexp'));
 
     // Create a user-space case-insensitive collation with UTF-8 support.
-    $pdo->sqliteCreateCollation('NOCASE_UTF8', array('Drupal\Component\Utility\Unicode', 'strCaseCmp'));
+    $pdo->sqliteCreateCollation('NOCASE_UTF8', array('Drupal\Component\Utility\Unicode', 'strcasecmp'));
 
     // Execute sqlite init_commands.
     if (isset($connection_options['init_commands'])) {

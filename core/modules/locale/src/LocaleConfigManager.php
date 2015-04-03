@@ -134,7 +134,7 @@ class LocaleConfigManager {
     if ($this->isSupported($name)) {
       // Create typed configuration wrapper based on install storage data.
       $data = $this->installStorageRead($name);
-      $type_definition = $this->typedConfigManager->getDefinition($name, TRUE, TRUE);
+      $type_definition = $this->typedConfigManager->getDefinition($name);
       $data_definition = $this->typedConfigManager->buildDataDefinition($type_definition, $data);
       $typed_config = $this->typedConfigManager->create($data_definition, $data);
       if ($typed_config instanceof TraversableTypedDataInterface) {
@@ -433,7 +433,9 @@ class LocaleConfigManager {
       if ($string = $this->translations[$name][$langcode][$context][$source]) {
         if (!$string->isTranslation()) {
           $conditions = array('lid' => $string->lid, 'language' => $langcode);
-          return $this->localeStorage->createTranslation($conditions);
+          $translation = $this->localeStorage->createTranslation($conditions);
+          $this->translations[$name][$langcode][$context][$source] = $translation;
+          return $translation;
         }
         else {
           return $string;

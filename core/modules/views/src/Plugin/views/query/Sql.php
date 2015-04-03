@@ -152,7 +152,7 @@ class Sql extends QueryPluginBase {
    * Set the view to be distinct (per base field).
    *
    * @param bool $value
-   *   Should the view by distincted.
+   *   Should the view be distincted.
    */
   protected function setDistinct($value = TRUE) {
     if (!(isset($this->noDistinct) && $value)) {
@@ -604,7 +604,7 @@ class Sql extends QueryPluginBase {
 
     // Have we been this way?
     if (isset($traced[$join->leftTable])) {
-      // we looped. Broked.
+      // We looped. Broken.
       return FALSE;
     }
 
@@ -1759,7 +1759,7 @@ class Sql extends QueryPluginBase {
           'l' => 'Day',
           // No format for Day of the month without leading zeros.
           'j' => 'DD',
-          'W' => 'WW',
+          'W' => 'IW',
           'H' => 'HH24',
           'h' => 'HH12',
           'i' => 'MI',
@@ -1797,7 +1797,16 @@ class Sql extends QueryPluginBase {
           'A' => '',
         );
         $format = strtr($format, $replace);
-        $expression = "strftime('$format', $field, 'unixepoch')";
+        // SQLite does not have a ISO week substitution string, so it needs
+        // special handling.
+        // @see http://en.wikipedia.org/wiki/ISO_week_date#Calculation
+        // @see http://stackoverflow.com/a/15511864/1499564
+        if ($format === '%W') {
+          $expression = "((strftime('%j', date(strftime('%Y-%m-%d', $field, 'unixepoch'), '-3 days', 'weekday 4')) - 1) / 7 + 1)";
+        }
+        else {
+          $expression = "strftime('$format', $field, 'unixepoch')";
+        }
         // The expression yields a string, but the comparison value is an
         // integer in case the comparison value is a float, integer, or numeric.
         // All of the above SQLite format tokens only produce integers. However,

@@ -343,7 +343,7 @@ function entity_test_entity_field_access($operation, FieldDefinitionInterface $f
       if ($items->value == 'no access value') {
         return AccessResult::forbidden()->cacheUntilEntityChanges($items->getEntity());
       }
-      elseif ($operation == 'delete' && $items->value == 'no delete access value') {
+      elseif ($operation == 'edit' && $items->value == 'no edit access value') {
         return AccessResult::forbidden()->cacheUntilEntityChanges($items->getEntity());
       }
     }
@@ -552,7 +552,7 @@ function entity_test_entity_access(EntityInterface $entity, $operation, AccountI
   // Uncacheable because the access result depends on a State key-value pair and
   // might therefore change at any time.
   $condition = \Drupal::state()->get("entity_test_entity_access.{$operation}." . $entity->id(), FALSE);
-  return AccessResult::allowedIf($condition)->setCacheable(FALSE);
+  return AccessResult::allowedIf($condition)->setCacheMaxAge(0);
 }
 
 /**
